@@ -40,3 +40,87 @@ body {
     font-size: 1.2em;
     opacity: 0.9;
 }
+
+
+/* I am adding css to the dot of status : Team Update */
+.blockchain-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #f44336;
+    animation: pulse 2s infinite;
+}
+
+.status-dot.connected {
+    background: #4caf50;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Team Update : Designing navbar */
+.nav-tabs {
+    display: flex;
+    background: white;
+    border-radius: 10px;
+    padding: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    gap: 5px;
+}
+
+.nav-tab {
+    flex: 1;
+    padding: 15px 20px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    white-space: nowrap;
+    min-width: 160px;
+}
+
+.nav-tab:hover {
+    background: rgba(102, 126, 234, 0.1);
+    color: #415a77;
+}
+
+.nav-tab.active {
+    background: linear-gradient(135deg, #415a77 0%, #415a77 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
