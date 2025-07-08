@@ -1,46 +1,43 @@
-# Checkpoint 4 Update (6:00 PM)
+# Checkpoint 5 Update (8:00 PM IST)
 
-## Progress Made :
+## What’s Implemented So Far
 
-### 1. Government Login Page (HTML + CSS)
-- Created a **clean and functional HTML structure** for the Government Login Page.
-- **CSS Styling**:
-  - Implementing a **separate CSS stylesheet** for external styling.
-  - Used **inline styling** for some specific elements.
+### 1. Government Page – HTML Complete
+- Fully structured the **Government Panel UI** using semantic HTML.
+- Includes sections for login, institution registration, and navigation.
 
----
+### 2. Institution Page – HTML Complete
+- Created layout for institution dashboard and certificate generation panel.
 
-## Files Updated
-| File | Description |
-|------|-------------|
-| index.html | Main HTML file |
-| style.css | External CSS stylesheet linked to HTML |
+### 3. Public Page – HTML In Progress
+- Base structure added for public verification system.
+- Includes upload input for certificate and result display placeholders.
 
-
----
-
-## Next Steps
-
-###  Page Setup
-We will begin creating dedicated pages for each major section of the app:
-1. **Government Section**  
-    For admins (e.g. Ministry/Govt) to register institutions
-2. **Institution Section**  
-    For authorized institutions to generate and upload certificates
-3. **Public Verification Section**  
-    For anyone to verify a certificate using its IPFS hash
-4. **Info/About Page**  
-    Contains project description, team info, and tech stack overview
+### 4. CSS Styling
+-  **Navbar styling complete** – consistent across all pages.
+-  **Wallet status dot** implemented – changes color based on wallet connection status (connected/disconnected).
+- Used external CSS for base styling and minor inline styles where needed.
 
 ---
 
+## What’s Next?
 
-### Upcoming Integration (Later Stages)
-Once HTML and CSS are finalized:
-- Integrate **JavaScript logic** for form handling and dynamic UI behavior
-- Connect pages to smart contract via Web3
-- Set up MetaMask login, contract interactions, and certificate verification
+### 1. Complete Remaining Pages
+  - Finalize HTML structure for:
+  - Public (remaining part)
+  - Info / About
+
+### 2. CSS Styling (Next Phase)
+  - Apply clean and responsive CSS for all UI components:
+  - Forms
+  - Cards / Panels
+  - Tables and certificates
+  - Make wallet status dot dynamic using JavaScript
+
+### 3. JavaScript Integration (Upcoming)
+- Add interactive wallet connection logic
+- Connect smart contract (using ethers.js or web3.js)
+- Enable dynamic behavior (e.g. form validation, real-time preview)
 
 ---
-
 
