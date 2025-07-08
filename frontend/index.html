@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Certificate Authentication System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Blockchain Certificate Authentication System</h1>
+            <p>Secure, Decentralized, and Immutable Certificate Management on Polygon</p>
+        </div>
+
+        <div class="blockchain-status">
+            <div class="status-indicator">
+                <div class="status-dot" id="connectionStatus"></div>
+                <span id="connectionText">Not Connected</span>
+            </div>
+            <div>
+                <span id="networkInfo">Network: Not Connected</span>
+                <button class="btn btn-connect" id="connectWallet" onclick="connectWallet()">Connect MetaMask</button>
+            </div>
+            <div id="accountInfo" style="display: none;">
+                <small id="accountAddress"></small>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showPage('government', event)">Government Portal</button>
+            <button class="nav-tab" onclick="openInstitutionPortal()">Institution Portal</button>
+            <button class="nav-tab" onclick="showPage('company')">Company Portal</button>
+            <button class="nav-tab" onclick="showPage('blockchain')">Blockchain Info</button>
+        </div>
+
+        <!-- I am Creating things for government page from here : Team Update -->
+        <div id="government" class="page">
+            <h2>Government Authorization Portal</h2>
+            <p>Authorize institutions on the blockchain to issue certificates</p>
+
+            <div class="grid">
+                <div>
+                    <h3 style="color: #000000; margin-bottom: 20px;">Register New Institution</h3>
+                    <div class="form-group">
+                        <label>Institution Name</label>
+                        <input type="text" id="institutionName" placeholder="Enter institution name">
+                    </div>
+                    <div class="form-group">
+                        <label>Institution Type</label>
+                        <select id="institutionType">
+                            <option value="">Select type</option>
+                            <option value="university">University</option>
+                            <option value="college">College</option>
+                            <option value="training-center">Training Center</option>
+                            <option value="certification-body">Certification Body</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Institution Wallet Address</label>
+                        <input type="text" id="institutionAddress" placeholder="0x...">
+                    </div>
+                    <div class="form-group">
+                        <label>Registration Number</label>
+                        <input type="text" id="registrationNumber" placeholder="Official registration number">
+                    </div>
+                    <button class="btn" onclick="registerInstitution()" id="registerBtn">
+                        <span id="registerBtnText">Register on Blockchain</span>
+                        <div class="loading" id="registerLoading" style="display: none;"></div>
+                    </button>
+                </div>
+
+                <div>
+                    <h3 style="color: #000000; margin-bottom: 20px;">Blockchain Registration Info</h3>
+                    <div class="blockchain-info">
+                        <h4>On-Chain Registration Process</h4>
+                        <p>When you register an institution, the following happens:</p>
+                        <ul style="margin: 15px 0; padding-left: 25px;">
+                            <li><strong>Permanent Storage:</strong> Institution data is stored immutably on Polygon
+                                blockchain</li>
+                            <li><strong>Smart Contract Validation:</strong> Government authority is cryptographically
+                                verified</li>
+                            <li><strong>Tamper-Proof Records:</strong> Impossible to modify or delete once registered
+                            </li>
+                            <li><strong>Gas Fee Payment:</strong> Transaction fees paid in MATIC tokens</li>
+                            <li><strong>Global Accessibility:</strong> Verification available worldwide, 24/7</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="color: #000000; margin-bottom: 20px;">Authorized Institutions</h3>
+            <div id="authorizedInstitutions">
+                <p style="text-align: center; color: #000000; padding: 20px;">Loading institutions...</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
