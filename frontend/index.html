@@ -7,7 +7,7 @@
     <title>Blockchain Certificate Authentication System</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 
 </head>
 
@@ -99,6 +99,153 @@
                 <p style="text-align: center; color: #000000; padding: 20px;">Loading institutions...</p>
             </div>
         </div>
+
+ <!-- I am Creating things for institution page from here : Team Update -->
+        <div id="institution" class="page">
+            <h2> Institution Portal</h2>
+            <p>Issue blockchain-secured certificates to students</p>
+
+            <div class="grid">
+                <div>
+                    <h3 style="color: #000000; margin-bottom: 20px;">Issue New Certificate</h3>
+                    <!-- Did Blockchain work here -->
+                    <div class="form-group">
+                        <label>Student Name <span style="color: red;">*</span></label>
+                        <input type="text" id="studentName" placeholder="Enter student full name"
+                            oninput="updateCertificatePreview()" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Course/Program <span style="color: red;">*</span></label>
+                        <input type="text" id="courseName" placeholder="Enter course or program name"
+                            oninput="updateCertificatePreview()" required>
+                    </div>
+                    <!-- Doing this part for preview and email, not for blockchain -->
+                    <div class="form-group">
+                        <label>Student Email</label>
+                        <input type="email" id="studentEmail" placeholder="student@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Completion Date</label>
+                        <input type="date" id="completionDate" oninput="updateCertificatePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Grade/Score</label>
+                        <input type="text" id="grade" placeholder="Enter grade or score"
+                            oninput="updateCertificatePreview()">
+                    </div>
+                    <button class="btn" onclick="issueCertificate()" id="issueBtn">
+                        <span id="issueBtnText"> Issue on Blockchain</span>
+                        <div class="loading" id="issueLoading" style="display: none;"></div>
+                    </button>
+                    <p style="font-size: 12px; color: #888; margin-top: 10px;">
+                        <span style="color: red;">*</span> Required fields for blockchain issuance.<br>
+                        Other fields are for preview/email only and do not affect blockchain records.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 style="color: #000000; margin-bottom: 20px;">Certificate Preview</h3>
+                    <div id="certificatePreview" class="certificate-preview">
+                        <div class="certificate-content" id="certificateContent">
+                            <div class="certificate-seal"></div>
+                            <div class="certificate-header">
+                                <h2>BLOCKCHAIN CERTIFICATE</h2>
+                                <p>SECURED BY POLYGON BLOCKCHAIN</p>
+                            </div>
+                            <div style="margin: 30px 0;">
+                                <p style="font-size: 18px; margin: 15px 0;">This is to certify that</p>
+                                <h3 id="previewStudentName"
+                                    style="color: #000000; margin: 20px 0; min-height: 30px; border-bottom: 3px solid #000000; padding-bottom: 15px; font-size: 1.8em;">
+                                    Student Name</h3>
+                                <p style="font-size: 16px; margin: 15px 0;">has successfully completed</p>
+                                <h4 id="previewCourseName"
+                                    style="color: #000000; margin: 20px 0; min-height: 25px; font-size: 1.4em;">Course
+                                    Name</h4>
+                                <div style="margin: 30px 0; text-align: left; display: inline-block;">
+                                    <p style="margin: 12px 0; font-size: 14px;"><strong>Completion Date:</strong> <span
+                                            id="previewDate">Not specified</span></p>
+                                    <p style="margin: 12px 0; font-size: 14px;"><strong>Grade:</strong> <span
+                                            id="previewGrade">Not specified</span></p>
+                                 
+                                    <p style="margin: 12px 0; font-size: 12px;"><strong>Certificate ID:</strong> <span
+                                            id="previewCertId">Will be generated</span></p>
+                                    <p style="margin: 12px 0; font-size: 12px;"><strong>Issue Date:</strong> <span
+                                            id="previewIssueDate"></span></p>
+                                </div>
+                                <div style="margin-top: 40px; border-top: 3px solid #000000; padding-top: 25px;">
+                                    <p style="font-size: 11px; color: #000000; line-height: 1.4;">
+                                        This certificate is cryptographically secured and verified on the Polygon
+                                        blockchain.<br>
+                                        Verification can be done at any time using the certificate ID at our
+                                        verification portal.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="certificate-actions">
+                        <button class="btn btn-success" onclick="downloadCertificate()" id="downloadBtn" disabled>
+                             Download Certificate
+                        </button>
+                        <button class="btn btn-secondary" onclick="showEmailSection()" id="emailBtn" disabled>
+                             Send to Student
+                        </button>
+                    </div>
+
+                    <div id="emailSection" class="email-section" style="display: none;">
+                        <h4> Send Certificate via Email</h4>
+                        <div class="form-group">
+                            <label>Student Email</label>
+                            <input type="email" id="emailRecipient" placeholder="student@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Subject</label>
+                            <input type="text" id="emailSubject" value="Your Blockchain Certificate">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Message</label>
+                            <textarea id="emailMessage" rows="4"
+                                placeholder="Congratulations on your completion! Please find your blockchain certificate attached."></textarea>
+                        </div>
+                        <div class="email-actions">
+                            <button class="btn btn-success" onclick="sendCertificateEmail()" id="sendEmailBtn">
+                                <span id="sendEmailBtnText"> Send Email</span>
+                                <div class="loading" id="sendEmailLoading" style="display: none;"></div>
+                            </button>
+                            <button class="btn btn-secondary" onclick="hideEmailSection()">Cancel</button>
+                        </div>
+                    </div>
+
+                    <div id="transactionInfo" style="display: none;">
+                        <h4> Transaction Information</h4>
+                        <div class="transaction-details">
+                            <p><strong>Transaction Hash:</strong> <span id="txHash"></span></p>
+                            <p><strong>Certificate ID:</strong> <span id="certId"></span></p>
+                            <p><strong>Block Number:</strong> <span id="blockNumber"></span></p>
+                            <p><strong>View on PolygonScan:</strong> <a href="#" id="polygonScanLink"
+                                    target="_blank">View Transaction</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="color: #000000; margin-bottom: 20px;"> Issued Certificates</h3>
+            <div id="issuedCertificates">
+                <p style="text-align: center; color: #040404; padding: 20px;">No certificates issued yet.</p>
+            </div>
+        </div>
+
+        <!-- Enhanced Company Portal -->
+        <div id="company" class="page">
+            <h2>Company Portal</h2>
+            <p>Verify the authenticity of certificates using blockchain technology and secure databases</p>
+
+            <div class="grid">
+                <div>
+                    <h3 style="color: #000000; margin-bottom: 20px;"> Certificate Verification</h3>
+
+
     </div>
 </body>
 </html>
