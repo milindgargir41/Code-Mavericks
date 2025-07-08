@@ -1,52 +1,70 @@
-# Checkpoint 2 (2:00 PM IST) – Smart Contract Development Initiated
-
-## Progress Summary
-
-Since Checkpoint 1, we have made meaningful progress in backend logic and overall setup:
-
-- Submitted the **Hackathon Presentation PPT**
-- Began developing the **Solidity Smart Contract**
-- Added `.env` to securely manage environment variables
-- Added `.gitignore` to exclude unnecessary files like `node_modules`, `.env`, and build artifacts
+##  Checkpoint 3 Update (4:00 PM IST)
 
 ---
 
-## Project Structure Update
+### Work Completed So Far:
 
-```bash
-.
-├── contracts/
-│   └── CertificateAuthenticator.sol      # Solidity smart contract started
-├── .env                                  # Secure environment config
-├── .gitignore                            # Git ignored files
-├── hardhat.config.js                     # Hardhat configuration
-├── package.json                          # npm config
-├── README.md                             # This file
+-  **Folder Structure Initialized**
+  - /contracts – Solidity Smart Contract
+  - /scripts – Deployment Scripts
+  - /frontend – React frontend (WOULD START)
+  - .env, .gitignore – Project configuration and secrets
 
-In Smart Contract We have Completed Following Functionalities:
+-  **Initialized Tools**
+  - npm init – Node package manager
+  - hardhat – Ethereum dev environment
+  - OpenZeppelin – Standardized secure contract templates
 
-Completed Function
-authorizeInstitution(...)
-Purpose: Authorizes a new institution by storing its details and marking it as authorized.
-Access Control: Only the owner can call this function (onlyOwner modifier).
-Emits: InstitutionAuthorized event on successful registration.
+-  **MetaMask Setup**
+  - Wallet connected and working on testnet
 
-Logic:
-Checks for a valid address.
-If the institution is not already authorized, it adds it to institutionAddresses[].
-Stores the institution details in the institutions mapping.
-Emits an event.
+-  **Smart Contract Developed & Deployed**
+  - Contract compiled, deployed, and ABI + Contract Address generated using **Hardhat**
 
-Currently Being Built:
+---
 
-Certificate Verification
-Certificate Revocation
-Certificate Count Function
-Owner Utility Functions
+##  Smart Contract Functionality
 
-Next Steps We Will Take:-
+Below are the core features implemented in the **CertificateAuthenticator** contract:
 
-Complete all contract logic
-Write unit tests
-Deploy to testnet (Polygon/Hardhat localnet)
-Connect frontend to smart contract
+###  Institution Management
+- authorizeInstitution(...):   Government can authorize institutions with name, type, and registration ID.
+- getInstitution(...):   Returns metadata of a registered institution.
+- isAuthorized(...):   Checks if an address is a verified institution.
+- getInstitutionCount():   Total number of registered institutions.
+- getInstitutionAddressByIndex(index):   Gets institution address by array index.
+
+---
+
+###  Certificate Lifecycle
+- issueCertificate(...):   Authorized institutions can issue certificates with metadata and IPFS hash.
+- verifyCertificate(id):   Verifies certificate validity and metadata by ID.
+- verifyCertificateByHash(ipfsHash):   Verifies certificate directly by IPFS hash.
+- revokeCertificate(id):   Revoke a certificate (issuer or government only).
+- getTotalCertificates():   Returns count of all certificates issued.
+
+---
+
+###  Utility Functions
+- getGovernmentAddress(): Returns address of contract deployer (government).
+
+---
+
+##  Deployment Info
+
+| Detail              | Value                                |
+|---------------------|--------------------------------------|
+| Network             | Hardhat / Polygon Amoy Testnet       |
+| Contract Name       | CertificateAuthenticator           |
+| Compiler Version    | ^0.8.19                            |
+| Deployment Tool     | Hardhat                              |
+| OpenZeppelin Used   | Yes (Ownable, Counters)              |
+| Contract Address    | We are not sharing adress here in README file.       |
+| ABI Path            | artifacts/contracts/CertificateAuthenticator.sol/CertificateAuthenticator.json |
+
+---
+
+## What's Next?
+
+Next, we’ll begin building the **frontend interface**
+
