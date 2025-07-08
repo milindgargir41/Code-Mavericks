@@ -1,60 +1,52 @@
-TEAM CODE-MAVERICKS UPDATE
+# Checkpoint 2 (2:00 PM IST) – Smart Contract Development Initiated
 
-## Checkpoint 1 Update (1:00 PM IST): Project Initialized 
-Below are the key tasks completed at this stage:
+## Progress Summary
 
-# Folder Structure Initialized
+Since Checkpoint 1, we have made meaningful progress in backend logic and overall setup:
 
-Untill now We have set up the basic folder layout to organize the project cleanly.
-
-
-truestamp/
-│
-├── contracts/         # Will hold Solidity smart contracts
-├── frontend/          # frontend
-
+- Submitted the **Hackathon Presentation PPT**
+- Began developing the **Solidity Smart Contract**
+- Added `.env` to securely manage environment variables
+- Added `.gitignore` to exclude unnecessary files like `node_modules`, `.env`, and build artifacts
 
 ---
 
-### NPM & Hardhat Initialized
+## Project Structure Update
 
-We have initialized the project using the following commands:
+```bash
+.
+├── contracts/
+│   └── CertificateAuthenticator.sol      # Solidity smart contract started
+├── .env                                  # Secure environment config
+├── .gitignore                            # Git ignored files
+├── hardhat.config.js                     # Hardhat configuration
+├── package.json                          # npm config
+├── README.md                             # This file
 
-bash
-npm init -y
-npm install --save-dev hardhat
-npx hardhat
+In Smart Contract We have Completed Following Functionalities:
 
+Completed Function
+authorizeInstitution(...)
+Purpose: Authorizes a new institution by storing its details and marking it as authorized.
+Access Control: Only the owner can call this function (onlyOwner modifier).
+Emits: InstitutionAuthorized event on successful registration.
 
-This created the following important files/folders automatically:
+Logic:
+Checks for a valid address.
+If the institution is not already authorized, it adds it to institutionAddresses[].
+Stores the institution details in the institutions mapping.
+Emits an event.
 
+Currently Being Built:
 
-- node_modules/
-- hardhat.config.js
-- package.json
-- package-lock.json
-- scripts/deploy.js (auto)
-- contracts/CertificateAuthenticator.sol (auto)
-- test/Lock.js (auto)
+Certificate Verification
+Certificate Revocation
+Certificate Count Function
+Owner Utility Functions
 
+Next Steps We Will Take:-
 
----
-
-###  MetaMask Wallet Set Up
-
-We have Downloaded the MetaMask Extension and had created a account on it.
-Our MetaMask wallet is now connected and configured to interact with the smart contracts we’ll be deploying. This ensures a smooth development experience when signing transactions via MetaMask.
-
----
-
-## Next Up
-
-We are now moving to *writing our first Solidity smart contract* that will allow:
-
-- Institutions to register
-- Certificates to be hashed and uploaded to blockchain
-- Public to verify certificates
-
----
-
-Stay tuned for the next checkpoint where we'll show working contract code and interaction!
+Complete all contract logic
+Write unit tests
+Deploy to testnet (Polygon/Hardhat localnet)
+Connect frontend to smart contract
