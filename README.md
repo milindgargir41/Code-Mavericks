@@ -1,31 +1,28 @@
-# Checkpoint 1 – Day 2 Update (2:00 PM IST)
+## Checkpoint 2 - Day 2 Update (4:00 PM IST)
 
-## What’s Completed
+### Features Implemented (Government Section – JavaScript Integration):
 
-### Unified HTML Structure
-- Combined **all application sections** (Government, Institution, Verification, About) into a **single HTML file** for simplicity and centralized management.
-- Well-organized layout with clear sections demarcated using semantic tags and IDs.
+- **MetaMask Integration**
+  - Connects wallet using `ethers.js`
+  - Detects account and network changes
+  - Verifies if connected wallet is the authorized government wallet
+  - Displays real-time wallet connection status
 
-### Full CSS Styling
-- Created and linked a **dedicated external CSS stylesheet** for consistent and clean styling.
-- Utilized **inline styles** in certain areas where context-specific styling was needed.
-- Responsive layout considerations are in place.
+- **Smart Contract Setup**
+  - Connects to deployed smart contract using contract ABI & address
+  - Ensures network is Polygon Amoy (Testnet)
 
-### Basic JavaScript Integration
-- Used **inline JavaScript** for a few interactive elements (like toggling views, wallet status, etc.).
-- Ensures foundational interactivity without yet fully connecting to blockchain logic.
+- **Access Control**
+  - Restricts access to Government portal to a specific wallet
+  - Shows error modal for unauthorized access
 
----
+- **UI Updates & DOM Interaction**
+  - Displays contract address, current date, and certificate preview
+  - Uses inline JS for event handling (`DOMContentLoaded`, connect button, modal handling)
 
-## Next Steps: JavaScript Logic Development
+- **Data Loaders**
+  - Loads authorized institutions and issued certificates after connection
 
-### JavaScript Phase Goals:
-  - Create reusable functions for:
-  - Wallet connect/disconnect
-  - Certificate form handling
-  - Access control (Gov/Admin/Institute)
-  - Add dynamic DOM manipulation for real-time previews and field validation.
-  - Integrate with **MetaMask** and **Ethers.js** for smart contract interaction.
-
----
-
+### Next:
+- Implement portal logic for Institution and Public sections using similar structure
+- Integrate certificate generation and blockchain interaction
