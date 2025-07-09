@@ -1,7 +1,8 @@
 # TrueStamp : Blockchain Certificate Authentication System
 
 ### Available at : https://lively-kringle-ea06ae.netlify.app/
-
+#### Would Work better on Desktops. (Although one would not be able to open Government Portal and Institution Portal as they Reqiure specific Metamask Wallet Adress.)
+---
 ## Problem Statement
 Certificate forgery and tampering have become alarmingly common, compromising the authenticity of academic and professional credentials. Traditional paper-based systems are prone to manipulation, loss, and fraud.
 
