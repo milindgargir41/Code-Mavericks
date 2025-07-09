@@ -1,6 +1,7 @@
 ## Checkpoint 2 - Day 2 Update (4:00 PM IST)
 
 ### Features Implemented (Government Section – JavaScript Integration):
+### Also attached ABI!
 
 - **MetaMask Integration**
   - Connects wallet using `ethers.js`
