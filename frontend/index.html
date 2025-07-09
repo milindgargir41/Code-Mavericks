@@ -1,23 +1,25 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Blockchain Certificate Authentication System</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
     <div class="container">
         <div class="header">
             <div class="nav__logo">
-          <a href="#" class="logo"><h1>True<span>Stamp</span></h1></a>
+                <a href="#" class="logo">
+                    <h1>True<span>Stamp</span></h1>
+                    <img src="assets/logo.png" alt="Logo" class="logo-img" />
+                </a>
             </div>
-            <h1>Blockchain Certificate Authentication System</h1>
+            <h1 class="name">Blockchain Certificate Authentication System</h1>
             <p>Secure, Decentralized, and Immutable Certificate Management on Polygon</p>
         </div>
 
@@ -36,15 +38,15 @@
         </div>
 
         <div class="nav-tabs">
-            <button class="nav-tab active" onclick="showPage('government', event)">Government Portal</button>
-            <button class="nav-tab" onclick="openInstitutionPortal()">Institution Portal</button>
-            <button class="nav-tab" onclick="showPage('company')">Company Portal</button>
-            <button class="nav-tab" onclick="showPage('blockchain')">Blockchain Info</button>
+            <button class="nav-tab active" onclick="showPage('government', event)"> Government Portal</button>
+            <button class="nav-tab" onclick="openInstitutionPortal()"> Institution Portal</button>
+            <button class="nav-tab" onclick="showPage('company')"> Company Portal</button>
+            <button class="nav-tab" onclick="showPage('blockchain')"> Blockchain Info</button>
         </div>
 
         <!-- Government Portal Work begins here-->
         <div id="government" class="page">
-            <h2>Government Authorization Portal</h2>
+            <h2> Government Authorization Portal</h2>
             <p>Authorize institutions on the blockchain to issue certificates</p>
 
             <div class="grid">
@@ -81,7 +83,7 @@
                 <div>
                     <h3 style="color: #667eea; margin-bottom: 20px;">Blockchain Registration Info</h3>
                     <div class="blockchain-info">
-                        <h4>On-Chain Registration Process</h4>
+                        <h4> On-Chain Registration Process</h4>
                         <p>When you register an institution, the following happens:</p>
                         <ul style="margin: 15px 0; padding-left: 25px;">
                             <li><strong>Permanent Storage:</strong> Institution data is stored immutably on Polygon
@@ -97,7 +99,7 @@
                 </div>
             </div>
 
-            <h3 style="color: #667eea; margin-bottom: 20px;">Authorized Institutions</h3>
+            <h3 style="color: #667eea; margin-bottom: 20px;"> Authorized Institutions</h3>
             <div id="authorizedInstitutions">
                 <p style="text-align: center; color: #666; padding: 20px;">Loading institutions...</p>
             </div>
@@ -113,6 +115,10 @@
                     <h3 style="color: #667eea; margin-bottom: 20px;">Issue New Certificate</h3>
                     <!-- Below one is for BlockChain -->
                     <div class="form-group">
+                        <label>Institution Name <span style="color: red;">*</span></label>
+                        <input type="text" id="institutionName" placeholder="Enter institution name" required>
+                    </div>
+                    <div class="form-group">
                         <label>Student Name <span style="color: red;">*</span></label>
                         <input type="text" id="studentName" placeholder="Enter student full name"
                             oninput="updateCertificatePreview()" required>
@@ -122,7 +128,6 @@
                         <input type="text" id="courseName" placeholder="Enter course or program name"
                             oninput="updateCertificatePreview()" required>
                     </div>
-                    <!-- Blockchain ke liye nhi, just for preview/mail -->
                     <div class="form-group">
                         <label>Student Email</label>
                         <input type="email" id="studentEmail" placeholder="student@example.com">
@@ -136,8 +141,9 @@
                         <input type="text" id="grade" placeholder="Enter grade or score"
                             oninput="updateCertificatePreview()">
                     </div>
+                    <!-- Ye waala Blockchain ke liye nhi, just for preview/mail -->
                     <button class="btn" onclick="issueCertificate()" id="issueBtn">
-                        <span id="issueBtnText">🚀 Issue on Blockchain</span>
+                        <span id="issueBtnText"> Issue on Blockchain</span>
                         <div class="loading" id="issueLoading" style="display: none;"></div>
                     </button>
                     <p style="font-size: 12px; color: #888; margin-top: 10px;">
@@ -169,7 +175,6 @@
                                             id="previewDate">Not specified</span></p>
                                     <p style="margin: 12px 0; font-size: 14px;"><strong>Grade:</strong> <span
                                             id="previewGrade">Not specified</span></p>
-                                    
                                     <p style="margin: 12px 0; font-size: 12px;"><strong>Certificate ID:</strong> <span
                                             id="previewCertId">Will be generated</span></p>
                                     <p style="margin: 12px 0; font-size: 12px;"><strong>Issue Date:</strong> <span
@@ -177,7 +182,7 @@
                                 </div>
                                 <div style="margin-top: 40px; border-top: 3px solid #eee; padding-top: 25px;">
                                     <p style="font-size: 11px; color: #666; line-height: 1.4;">
-                                        🔗 This certificate is cryptographically secured and verified on the Polygon
+                                        This certificate is cryptographically secured and verified on the Polygon
                                         blockchain.<br>
                                         Verification can be done at any time using the certificate ID at our
                                         verification portal.
@@ -197,7 +202,7 @@
                     </div>
 
                     <div id="emailSection" class="email-section" style="display: none;">
-                        <h4>Send Certificate via Email</h4>
+                        <h4> Send Certificate via Email</h4>
                         <div class="form-group">
                             <label>Student Email</label>
                             <input type="email" id="emailRecipient" placeholder="student@example.com">
@@ -213,7 +218,7 @@
                         </div>
                         <div class="email-actions">
                             <button class="btn btn-success" onclick="sendCertificateEmail()" id="sendEmailBtn">
-                                <span id="sendEmailBtnText">Send Email</span>
+                                <span id="sendEmailBtnText"> Send Email</span>
                                 <div class="loading" id="sendEmailLoading" style="display: none;"></div>
                             </button>
                             <button class="btn btn-secondary" onclick="hideEmailSection()">Cancel</button>
@@ -221,11 +226,12 @@
                     </div>
 
                     <div id="transactionInfo" style="display: none;">
-                        <h4>Transaction Information</h4>
+                        <h4> Transaction Information</h4>
                         <div class="transaction-details">
                             <p><strong>Transaction Hash:</strong> <span id="txHash"></span></p>
                             <p><strong>Certificate ID:</strong> <span id="certId"></span></p>
                             <p><strong>Block Number:</strong> <span id="blockNumber"></span></p>
+                            <p><strong>Certificate Hash:</strong> <span id="certificateHash"></span></p>
                             <p><strong>View on PolygonScan:</strong> <a href="#" id="polygonScanLink"
                                     target="_blank">View Transaction</a></p>
                         </div>
@@ -233,38 +239,38 @@
                 </div>
             </div>
 
-            <h3 style="color: #667eea; margin-bottom: 20px;">Issued Certificates</h3>
+            <h3 style="color: #667eea; margin-bottom: 20px;"> Issued Certificates</h3>
             <div id="issuedCertificates">
                 <p style="text-align: center; color: #666; padding: 20px;">No certificates issued yet.</p>
             </div>
         </div>
 
-        <!-- Company Portal Work begins here -->
+        <!-- Verification Portal Work begins here -->
         <div id="company" class="page">
-            <h2>Verification Portal</h2>
+            <h2> Company Portal</h2>
             <p>Verify the authenticity of certificates using blockchain technology and secure databases</p>
 
             <div class="grid">
                 <div>
-                    <h3 style="color: #667eea; margin-bottom: 20px;">Certificate Verification</h3>
+                    <h3 style="color: #667eea; margin-bottom: 20px;"> Certificate Verification</h3>
 
                     <!-- File Upload work below -->
                     <div class="form-group">
                         <label>Upload Certificate (Optional)</label>
                         <div class="upload-area"
                             style="border: 2px dashed #667eea; padding: 20px; text-align: center; margin: 10px 0; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;">
-                            <input type="file" id="certificateFile" accept=".pdf,.jpg,.jpeg,.png" style="display: none;"
+                            <input type="file" id="certificateFile" accept=".json" style="display: none;"
                                 onchange="handleFileUpload(event)">
                             <div onclick="document.getElementById('certificateFile').click()">
-                                <i style="font-size: 24px; color: #667eea;">📄</i>
+                                <i style="font-size: 24px; color: #667eea;"></i>
                                 <p style="margin: 10px 0; color: #667eea;">Click to upload or drag & drop certificate
                                     file</p>
-                                <p style="font-size: 12px; color: #888;">Supported formats: PDF, JPG, PNG</p>
+                                <p style="font-size: 12px; color: #888;">Supported format: JSON</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Manual Hash Input beneath -->
+                    <!-- Manual Hash Input ke liye -->
                     <div class="form-group">
                         <label>Certificate Hash/ID</label>
                         <input type="text" id="certificateId" placeholder="Enter certificate ID or hash">
@@ -275,32 +281,32 @@
                     <!-- Verification Button Function under here -->
                     <button type="button" class="btn" onclick="verifyCertificate()" id="verifyBtn"
                         style="width: 100%; margin-top: 15px;">
-                        <span id="verifyBtnText">🔍 Verify Certificate</span>
+                        <span id="verifyBtnText"> Verify Certificate</span>
                         <div class="loading" id="verifyLoading" style="display: none;"></div>
                     </button>
                 </div>
 
                 <div>
-                    <h3 style="color: #667eea; margin-bottom: 20px;">How Verification Works</h3>
+                    <h3 style="color: #667eea; margin-bottom: 20px;"> How Verification Works</h3>
                     <div class="verification-info"
                         style="background: #f8f9ff; padding: 20px; border-radius: 8px; border-left: 4px solid #667eea;">
-                        <h4>Multi-Layer Verification Process</h4>
+                        <h4> Multi-Layer Verification Process</h4>
                         <p style="margin-bottom: 15px;">Our advanced verification system provides:</p>
                         <ul style="margin: 15px 0; padding-left: 25px; line-height: 1.6;">
-                            <li><strong>Blockchain Verification:</strong> Primary verification through immutable
+                            <li><strong>🔗 Blockchain Verification:</strong> Primary verification through immutable
                                 blockchain records</li>
-                            <li><strong>Database Backup:</strong> Secondary verification through secure local
+                            <li><strong> Database Backup:</strong> Secondary verification through secure local
                                 databases</li>
-                            <li><strong>Institution Validation:</strong> Confirms issuing institution authorization
+                            <li><strong> Institution Validation:</strong> Confirms issuing institution authorization
                                 status</li>
-                            <li><strong>Instant Results:</strong> Real-time verification with detailed certificate
+                            <li><strong> Instant Results:</strong> Real-time verification with detailed certificate
                                 information</li>
-                            <li><strong>Global Access:</strong> Verify certificates from anywhere in the world</li>
-                            <li><strong>Cryptographic Proof:</strong> Mathematical certainty of authenticity</li>
+                            <li><strong> Global Access:</strong> Verify certificates from anywhere in the world</li>
+                            <li><strong> Cryptographic Proof:</strong> Mathematical certainty of authenticity</li>
                         </ul>
 
                         <div style="margin-top: 20px; padding: 15px; background: #e8f2ff; border-radius: 6px;">
-                            <h4 style="margin: 0 0 10px 0; color: #2c5aa0;">Verification Methods</h4>
+                            <h4 style="margin: 0 0 10px 0; color: #2c5aa0;"> Verification Methods</h4>
                             <p style="margin: 0; font-size: 14px;">
                                 <strong>1. File Upload:</strong> Upload certificate file for automatic hash
                                 generation<br>
@@ -320,7 +326,7 @@
 
             <!-- Recent Verifications kaa Section -->
             <div style="margin-top: 30px;">
-                <h3 style="color: #667eea; margin-bottom: 20px;">Recent Verification History</h3>
+                <h3 style="color: #667eea; margin-bottom: 20px;"> Recent Verification History</h3>
                 <div id="recentVerifications" style="display: grid; gap: 15px;">
                     <!-- Recent verifications yaha dikhenge -->
                 </div>
@@ -329,7 +335,7 @@
 
         <!-- Blockchain kaa Info -->
         <div id="blockchain" class="page">
-            <h2>Blockchain Information</h2>
+            <h2> Blockchain Information</h2>
             <p>Technical details and smart contract information</p>
 
             <div class="grid">
@@ -342,7 +348,7 @@
                         <p><strong>Contract Type:</strong> ERC-721 Compatible Certificate Registry</p>
                     </div>
 
-                    <h4>Contract Functions</h4>
+                    <h4> Contract Functions</h4>
                     <ul style="margin: 15px 0; padding-left: 25px;">
                         <li><strong>authorizeInstitution:</strong> Government authorization of institutions</li>
                         <li><strong>issueCertificate:</strong> Institution certificate issuance</li>
@@ -355,7 +361,7 @@
                 <div>
                     <h3 style="color: #667eea; margin-bottom: 20px;">System Architecture</h3>
                     <div class="architecture-info">
-                        <h4>Technology Stack</h4>
+                        <h4> Technology Stack</h4>
                         <ul style="margin: 15px 0; padding-left: 25px;">
                             <li><strong>Blockchain:</strong> Polygon (MATIC) - Layer 2 Ethereum</li>
                             <li><strong>Smart Contracts:</strong> Solidity</li>
@@ -365,7 +371,7 @@
                             <li><strong>Certificate Generation:</strong> HTML2Canvas</li>
                         </ul>
 
-                        <h4>Security Features</h4>
+                        <h4> Security Features</h4>
                         <ul style="margin: 15px 0; padding-left: 25px;">
                             <li><strong>Cryptographic Signatures:</strong> All transactions signed</li>
                             <li><strong>Immutable Storage:</strong> Blockchain persistence</li>
@@ -376,7 +382,7 @@
                 </div>
             </div>
 
-            <h3 style="color: #667eea; margin-bottom: 20px;">System Statistics</h3>
+            <h3 style="color: #667eea; margin-bottom: 20px;"> System Statistics</h3>
             <div class="stats-grid">
                 <div class="stat-card">
                     <h4>Total Institutions</h4>
@@ -415,7 +421,6 @@
             <div id="instWalletError" style="color:red; margin-top:10px;"></div>
         </div>
     </div>
-
 
     <script src="script.js"></script>
 

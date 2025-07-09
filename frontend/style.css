@@ -6,21 +6,40 @@
 
  body {
      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-     background: linear-gradient(135deg, #f3f3f4 0%, #f3f3f4 100%);
+     background: linear-gradient(135deg, #f3f3f4 0%, #bfcde0 100%);
      min-height: 100vh;
      color: #333;
      line-height: 1.6;
  }
 
+.nav__logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav__logo .logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logo-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
  .logo {
+  margin-left: 400px; 
   font-size: 1.5rem;
   font-weight: 700;
-  color: #38c25f;
+  color: #7ed957;
   text-decoration: none;
 }
 
 .logo span {
-  color: #217ffa;
+  color: #009cff;
 }
  .container {
      max-width: 1200px;
@@ -34,7 +53,7 @@
      margin-bottom: 30px;
      color: #124559;
      padding: 20px;
-     background: rgba(255, 255, 255, 0.1);
+     background: rgba(255, 255, 255, 0.579);
      border-radius: 15px;
      backdrop-filter: blur(10px);
      border: 1px solid rgba(255, 255, 255, 0.2);
@@ -43,7 +62,11 @@
  .header h1 {
      font-size: 2.5em;
      margin-bottom: 10px;
-     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+     
+ }
+
+ .name {
+text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
  }
 
  .header p {
@@ -220,6 +243,10 @@
      color: white;
      box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
  }
+
+#box {
+    margin-left: 600px;
+}
 
  .btn:hover {
      transform: translateY(-2px);

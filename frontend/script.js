@@ -1,20 +1,25 @@
-
 let provider;
 let signer;
 let contract;
 let currentAccount;
 let isConnected = false;
 let institutionWallet = null;
-const ALLOWED_GOVERNMENT_WALLET = "0x8d4FCF275740bDDd7bbFeC996F689bBc2f35743E".toLowerCase();
+const ALLOWED_GOVERNMENT_WALLET = "0x2A9b8BaEB5Ec6954c95ea3877aad3e53A52141d9".toLowerCase();
 const ALLOWED_INSTITUTION_WALLETS = [
-  "0x859c248490F8be17d12F8e5a4fE1fB384102a43A".toLowerCase(),
-  "0xc852aF3B42e558e87000C076797D1175D413b603".toLowerCase(),
-  "0x742C8ec1AB26fFf922a4b8B1db3BBdc74F2B7210".toLowerCase()
+  "0xf46dF7A94D2cB09746BBD373ac3DC18202235e1F".toLowerCase(),
+  "0x2a7cf1c018881e03e15B46c8A6EA9436D6F4753e".toLowerCase(),
+  "0x63fc10982D9DB6837fC2d98B756724E6f6bDb275".toLowerCase()
 ];
-const CONTRACT_ADDRESS = "0x55c1c865dA8427aF791DebeE81fbbf63551f7DD2";
-const POLYGON_AMOY_CHAIN_ID = "0x13882";
+
+const NORMALIZED_INSTITUTION_WALLETS = ALLOWED_INSTITUTION_WALLETS.map(addr => addr.toLowerCase());
+const NORMALIZED_GOVERNMENT_WALLET = ALLOWED_GOVERNMENT_WALLET.toLowerCase();
+
+// Smart contract ke liye configuration
+const CONTRACT_ADDRESS = "0x6C55FE7FEBd6Df64b59A6A02298d1fbD8D9233d5"; 
+const POLYGON_AMOY_CHAIN_ID = "0x13882"; 
 const POLYGON_AMOY_RPC = "https://rpc-amoy.polygon.technology/";
 
+// Contract ki ABI (Application Binary Interface)
 const CONTRACT_ABI = [
     {
       "inputs": [],
@@ -891,7 +896,8 @@ const CONTRACT_ABI = [
       "type": "function"
     }
   ];
-  
+
+// Below one is to Listen for MetaMask account changes and handle UI/government portal access
 if (window.ethereum) {
   window.ethereum.on('accountsChanged', function (accounts) {
     if (accounts.length > 0) {
@@ -924,111 +930,7 @@ if (window.ethereum) {
   });
 }
 
-async function registerInstitution() {
-  const institutionName = document.getElementById('institutionName').value.trim();
-  const institutionType = document.getElementById('institutionType').value.trim();
-  const institutionAddress = document.getElementById('institutionAddress').value.trim();
-  const registrationNumber = document.getElementById('registrationNumber').value.trim();
-
-  if (!institutionName || !institutionType || !institutionAddress || !registrationNumber) {
-    showNotification('Please fill all fields', 'error');
-    return;
-  }
-  if (!ethers.utils.isAddress(institutionAddress)) {
-    showNotification('Invalid institution wallet address! Please enter a valid 0x... address.', 'error');
-    return;
-  }
-
-  try {
-    setButtonLoading('registerBtn', 'registerBtnText', 'registerLoading', true);
-    const tx = await contract.authorizeInstitution(
-      institutionAddress,
-      institutionName,
-      institutionType,
-      registrationNumber
-    );
-    showNotification('Transaction submitted. Waiting for confirmation...', 'info');
-    await tx.wait();
-    showNotification('Institution registered successfully!', 'success');
-
-    document.getElementById('institutionName').value = '';
-    document.getElementById('institutionType').value = '';
-    document.getElementById('institutionAddress').value = '';
-    document.getElementById('registrationNumber').value = '';
-
-    await loadAuthorizedInstitutions();
-    loadSystemStats();
-  } catch (error) {
-    console.error('Error registering institution:', error);
-    showNotification('Failed to register institution: ' + error.message, 'error');
-  } finally {
-    setButtonLoading('registerBtn', 'registerBtnText', 'registerLoading', false);
-  }
-}
-
-async function loadAuthorizedInstitutions() {
-    if (!window.ethereum || !isConnected) {
-        console.warn('Wallet not connected');
-        return;
-    }
-    
-    const institutionsDiv = document.getElementById('authorizedInstitutions');
-    institutionsDiv.innerHTML = '<p style="text-align: center; color: #888; padding: 20px;">Loading institutions...</p>';
-
-    try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
-        const contract = new ethers.Contract(CONTRACT_ADDRESS.trim(), CONTRACT_ABI, signer);
-
-        let count = await contract.getInstitutionCount();
-        count = Number(count.toString ? count.toString() : count);
-
-        if (count === 0) {
-            institutionsDiv.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No institutions registered yet.</p>';
-            return;
-        }
-
-        let html = '<div class="institutions-grid">';
-        let totalCount = 0;
-
-        for (let i = 0; i < count; i++) {
-            try {
-                const address = await contract.getInstitutionAddressByIndex(i);
-                const institution = await contract.institutions(address);
-
-                const statusClass = institution.isAuthorized ? 'active' : 'inactive';
-                const statusText = institution.isAuthorized ? 'Active' : 'Inactive';
-                const statusColor = institution.isAuthorized ? '#4CAF50' : '#f44336';
-
-                html += `
-                    <div class="institution-card">
-                        <h4>${institution.name}</h4>
-                        <p><strong>Type:</strong> ${institution.institutionType}</p>
-                        <p><strong>Registration:</strong> ${institution.registrationNumber}</p>
-                        <p><strong>Address:</strong> ${address.slice(0, 10)}...${address.slice(-8)}</p>
-                        <p><strong>Status:</strong> <span class="status-badge ${statusClass}" style="color: ${statusColor};">${statusText}</span></p>
-                        ${!institution.isAuthorized ? '<p style="color: #f44336; font-size: 12px;">⚠️ Not authorized to issue certificates</p>' : ''}
-                    </div>
-                `;
-                totalCount++;
-            } catch (error) {
-                console.error(`Error loading institution ${i}:`, error);
-            }
-        }
-
-        html += '</div>';
-
-        if (totalCount === 0) {
-            institutionsDiv.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No institutions found.</p>';
-        } else {
-            institutionsDiv.innerHTML = html;
-        }
-    } catch (error) {
-        console.error('Error loading institutions:', error);
-        institutionsDiv.innerHTML = '<p style="text-align: center; color: #f44336; padding: 20px;">Error loading institutions</p>';
-    }
-}
-
+// Handler for modal connect button
 document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('govConnectBtn').onclick = async function () {
     try {
@@ -1198,6 +1100,248 @@ async function checkWalletConnection() {
   }
 }
 
+// Government Portal ke Functions
+async function registerInstitution() {
+  const institutionName = document.getElementById('institutionName').value.trim();
+  const institutionType = document.getElementById('institutionType').value.trim();
+  const institutionAddress = document.getElementById('institutionAddress').value.trim();
+  const registrationNumber = document.getElementById('registrationNumber').value.trim();
+
+  if (!institutionName || !institutionType || !institutionAddress || !registrationNumber) {
+    showNotification('Please fill all fields', 'error');
+    return;
+  }
+  if (!ethers.utils.isAddress(institutionAddress)) {
+    showNotification('Invalid institution wallet address! Please enter a valid 0x... address.', 'error');
+    return;
+  }
+
+  try {
+    setButtonLoading('registerBtn', 'registerBtnText', 'registerLoading', true);
+    const tx = await contract.authorizeInstitution(
+      institutionAddress,
+      institutionName,
+      institutionType,
+      registrationNumber
+    );
+    showNotification('Transaction submitted. Waiting for confirmation...', 'info');
+    await tx.wait();
+    showNotification('Institution registered successfully!', 'success');
+
+    document.getElementById('institutionName').value = '';
+    document.getElementById('institutionType').value = '';
+    document.getElementById('institutionAddress').value = '';
+    document.getElementById('registrationNumber').value = '';
+
+    await loadAuthorizedInstitutions();
+    loadSystemStats();
+  } catch (error) {
+    console.error('Error registering institution:', error);
+    showNotification('Failed to register institution: ' + error.message, 'error');
+  } finally {
+    setButtonLoading('registerBtn', 'registerBtnText', 'registerLoading', false);
+  }
+}
+
+let lastRegisteredInstitution = null;
+
+async function loadAuthorizedInstitutions() {
+    if (!window.ethereum || !isConnected) {
+        console.warn('Wallet not connected');
+        return;
+    }
+    
+    const institutionsDiv = document.getElementById('authorizedInstitutions');
+    institutionsDiv.innerHTML = '<p style="text-align: center; color: #888; padding: 20px;">Loading institutions...</p>';
+
+    try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const contract = new ethers.Contract(CONTRACT_ADDRESS.trim(), CONTRACT_ABI, signer);
+
+        let count = await contract.getInstitutionCount();
+        count = Number(count.toString ? count.toString() : count);
+
+        if (count === 0) {
+            institutionsDiv.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No institutions registered yet.</p>';
+            return;
+        }
+
+        let html = '<div class="institutions-grid">';
+        let totalCount = 0;
+
+        for (let i = 0; i < count; i++) {
+            try {
+                const address = await contract.getInstitutionAddressByIndex(i);
+                const institution = await contract.institutions(address);
+
+                const statusClass = institution.isAuthorized ? 'active' : 'inactive';
+                const statusText = institution.isAuthorized ? 'Active' : 'Inactive';
+                const statusColor = institution.isAuthorized ? '#4CAF50' : '#f44336';
+
+                html += `
+                    <div class="institution-card">
+                        <h4>${institution.name}</h4>
+                        <p><strong>Type:</strong> ${institution.institutionType}</p>
+                        <p><strong>Registration:</strong> ${institution.registrationNumber}</p>
+                        <p><strong>Address:</strong> ${address.slice(0, 10)}...${address.slice(-8)}</p>
+                        <p><strong>Status:</strong> <span class="status-badge ${statusClass}" style="color: ${statusColor};">${statusText}</span></p>
+                        ${!institution.isAuthorized ? '<p style="color: #f44336; font-size: 12px;">⚠️ Not authorized to issue certificates</p>' : ''}
+                    </div>
+                `;
+                totalCount++;
+            } catch (error) {
+                console.error(`Error loading institution ${i}:`, error);
+            }
+        }
+
+        html += '</div>';
+
+        if (totalCount === 0) {
+            institutionsDiv.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No institutions found.</p>';
+        } else {
+            institutionsDiv.innerHTML = html;
+        }
+    } catch (error) {
+        console.error('Error loading institutions:', error);
+        institutionsDiv.innerHTML = '<p style="text-align: center; color: #f44336; padding: 20px;">Error loading institutions</p>';
+    }
+}
+
+// Institution Portal ke Functions ke liye
+async function issueCertificate() {
+    if (!isConnected) {
+        showNotification('Please connect your wallet first', 'error');
+        return;
+    }
+    const currentWalletLower = currentAccount.toLowerCase();
+    const isAllowedInstitution = NORMALIZED_INSTITUTION_WALLETS.includes(currentWalletLower);
+    
+    console.log('Current wallet:', currentWalletLower);
+    console.log('Allowed institution wallets:', NORMALIZED_INSTITUTION_WALLETS);
+    console.log('Is allowed institution:', isAllowedInstitution);
+
+    if (!isAllowedInstitution) {
+        showNotification('Access denied: Only authorized institution wallets can issue certificates', 'error');
+        return;
+    }
+    const studentName = document.getElementById('studentName').value.trim();
+    const courseName = document.getElementById('courseName').value.trim();
+    const completionDate = document.getElementById('completionDate').value || new Date().toISOString().split('T')[0];
+    const grade = document.getElementById('grade').value.trim() || 'Pass';
+    
+    let issuerName = "Institution";
+    const issuerNameInput = document.getElementById('institutionName');
+    if (issuerNameInput && issuerNameInput.value.trim()) {
+        issuerName = issuerNameInput.value.trim();
+    }
+
+    if (!studentName || !courseName || !issuerName) {
+        showNotification('Please fill all required fields', 'error');
+        return;
+    }
+
+    try {
+        setButtonLoading('issueBtn', 'issueBtnText', 'issueLoading', true);
+
+        try{
+        const isAuthorized = await contract.isAuthorized(currentAccount);
+        if (!isAuthorized) {
+            throw new Error('Your wallet is not authorized to issue certificates');
+        }
+        } catch (contractError) {
+            console.warn('Contract authorization check failed:', contractError);
+        }
+
+        const timestamp = Math.floor(Date.now() / 1000);
+        const issueDateISO = new Date(timestamp * 1000).toISOString();
+
+        const certificateData = {
+            studentName: studentName,
+            courseName: courseName,
+            completionDate: completionDate,
+            grade: grade,
+            issuerName: issuerName,
+            issueDate: issueDateISO,
+            issueTimestamp: timestamp,
+            issuer: currentAccount
+        };
+
+        const dataForHashing = JSON.stringify({
+            studentName: certificateData.studentName,
+            courseName: certificateData.courseName,
+            completionDate: certificateData.completionDate,
+            grade: certificateData.grade,
+            issuerName: certificateData.issuerName,
+            issueDate: certificateData.issueDate,
+            issueTimestamp: certificateData.issueTimestamp,
+            issuer: certificateData.issuer
+        });
+
+        const certificateHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(dataForHashing));
+
+        const tx = await contract.issueCertificate(
+            studentName,
+            courseName,
+            issuerName,
+            certificateHash
+        );
+
+        showNotification('Transaction submitted. Waiting for confirmation...', 'info');
+        const receipt = await tx.wait();
+
+        const certificateId = receipt.events?.find(e => e.event === 'CertificateIssued')?.args?.id || 'N/A';
+
+        certificateData.certificateId = certificateId.toString();
+        certificateData.certificateHash = certificateHash;
+        certificateData.transactionHash = receipt.transactionHash;
+        certificateData.blockNumber = receipt.blockNumber;
+
+        const downloadableData = JSON.stringify(certificateData, null, 2);
+        window.lastIssuedCertificateDownload = downloadableData;
+
+        window.lastIssuedCertificate = certificateData;
+
+        showNotification('Certificate issued successfully with hash stored!', 'success');
+        document.getElementById('txHash').textContent = receipt.transactionHash;
+        document.getElementById('certId').textContent = certificateId.toString();
+        document.getElementById('blockNumber').textContent = receipt.blockNumber;
+        document.getElementById('certificateHash').textContent = certificateHash;
+        document.getElementById('polygonScanLink').href = `https://amoy.polygonscan.com/tx/${receipt.transactionHash}`;
+        document.getElementById('transactionInfo').style.display = 'block';
+        document.getElementById('previewCertId').textContent = certificateId.toString();
+        document.getElementById('downloadBtn').disabled = false;
+        document.getElementById('emailBtn').disabled = false;
+
+        document.getElementById('previewStudentName').textContent = studentName;
+        document.getElementById('previewCourseName').textContent = courseName;
+        document.getElementById('previewDate').textContent = completionDate;
+        document.getElementById('previewGrade').textContent = grade;
+
+        loadIssuedCertificates();
+        loadSystemStats();
+
+    } catch (error) {
+        console.error('Error issuing certificate:', error);
+        showNotification('Failed to issue certificate: ' + error.message, 'error');
+    } finally {
+        setButtonLoading('issueBtn', 'issueBtnText', 'issueLoading', false);
+    }
+}
+
+function updateCertificatePreview() {
+    const studentName = document.getElementById('studentName').value || 'Student Name';
+    const courseName = document.getElementById('courseName').value || 'Course Name';
+    const completionDate = document.getElementById('completionDate').value || 'Not specified';
+    const grade = document.getElementById('grade').value || 'Not specified';
+    
+    document.getElementById('previewStudentName').textContent = studentName;
+    document.getElementById('previewCourseName').textContent = courseName;
+    document.getElementById('previewDate').textContent = completionDate;
+    document.getElementById('previewGrade').textContent = grade;
+    document.getElementById('previewStudentAddr').textContent = 'Not specified';
+}
+
 function updateCurrentDate() {
   const now = new Date();
   const dateString = now.toLocaleDateString('en-US', {
@@ -1206,6 +1350,69 @@ function updateCurrentDate() {
     day: 'numeric'
   });
   document.getElementById('previewIssueDate').textContent = dateString;
+}
+
+function generateCertificateData(studentName, courseName, issuerName, certificateId, issueDate) {
+    return {
+        studentName,
+        courseName,
+        issuerName,
+        certificateId,
+        issueDate,
+        issueTimestamp: Date.now()
+    };
+}
+
+function generateCertificateHash(certificateData) {
+    const dataForHashing = JSON.stringify({
+        studentName: certificateData.studentName,
+        courseName: certificateData.courseName,
+        completionDate: certificateData.completionDate,
+        grade: certificateData.grade,
+        issuerName: certificateData.issuerName,
+        issueDate: certificateData.issueDate,
+        issueTimestamp: certificateData.issueTimestamp,
+        issuer: certificateData.issuer
+    });
+    
+    return ethers.utils.keccak256(ethers.utils.toUtf8Bytes(dataForHashing));
+}
+
+async function checkCertificateHashExists(hash) {
+    if (!contract) {
+        throw new Error('Contract not initialized');
+    }
+
+    try {
+        const exists = await contract.doesCertificateHashExist(hash);
+        return exists;
+    } catch (error) {
+        console.error('Error checking hash existence:', error);
+        return false;
+    }
+}
+
+function downloadCertificate() {
+    try {
+        if (!window.lastIssuedCertificateDownload) {
+            showNotification('No certificate data available for download', 'error');
+            return;
+        }
+
+        const dataStr = window.lastIssuedCertificateDownload;
+        const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+        const exportFileDefaultName = `certificate_${document.getElementById('previewCertId').textContent}.json`;
+        
+        const link = document.createElement('a');
+        link.setAttribute('href', dataUri);
+        link.setAttribute('download', exportFileDefaultName);
+        link.click();
+        
+        showNotification('Certificate downloaded successfully!', 'success');
+    } catch (error) {
+        console.error('Error downloading certificate:', error);
+        showNotification('Failed to download certificate', 'error');
+    }
 }
 
 function showEmailSection() {
@@ -1244,13 +1451,15 @@ async function loadIssuedCertificates() {
     for (let i = Math.max(1, total - 4); i <= total; i++) {
       const cert = await contract.certificates(i);
       if (cert.issuer.toLowerCase() !== currentAccount.toLowerCase()) continue;
-      html += `<div class="certificate-card">
+      html += `
+                <div class="certificate-card">
                     <p><strong>ID:</strong> ${cert.id}</p>
                     <p><strong>Student:</strong> ${cert.recipientName}</p>
                     <p><strong>Course:</strong> ${cert.courseName}</p>
                     <p><strong>Issue Date:</strong> ${new Date(cert.issueDate * 1000).toLocaleDateString()}</p>
                     <p><strong>Status:</strong> <span class="status-badge ${cert.isValid ? 'status-approved' : 'status-rejected'}">${cert.isValid ? 'Valid' : 'Revoked'}</span></p>
-                </div>`;
+                </div>
+            `;
     }
     if (!html) {
       certificatesDiv.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No certificates issued yet.</p>';
@@ -1263,6 +1472,170 @@ async function loadIssuedCertificates() {
   }
 }
 
+// Verification Portal ke Functions
+async function verifyCertificate() {
+    const certificateIdInput = document.getElementById('certificateId').value.trim();
+    const manualHashInput = document.getElementById('manualHash').value.trim();
+    let certificateIdOrHash = certificateIdInput || manualHashInput;
+
+    if (!certificateIdOrHash) {
+        showNotification('Please enter a certificate ID or upload a certificate file to generate hash.', 'error');
+        return;
+    }
+
+    try {
+        setButtonLoading('verifyBtn', 'verifyBtnText', 'verifyLoading', true);
+        let result = null;
+        let isValid = false;
+        let certificateData = {
+            studentName: 'N/A',
+            courseName: 'N/A',
+            completionDate: 'N/A',
+            grade: 'N/A',
+            issuer: 'N/A'
+        };
+
+        if (/^0x[a-fA-F0-9]{64}$/.test(certificateIdOrHash)) {
+            try {
+                result = await contract.verifyCertificateByHash(certificateIdOrHash);
+                isValid = result && result.isValid;
+                
+                if (isValid) {
+                    certificateData = {
+                        studentName: result.recipientName || 'N/A',
+                        courseName: result.courseName || 'N/A',
+                        completionDate: result.issueDate ? new Date(result.issueDate * 1000).toLocaleDateString() : 'N/A',
+                        grade: 'Pass',
+                        issuer: result.issuerName || 'N/A'
+                    };
+                }
+            } catch (err) {
+                console.error('Hash verification failed:', err);
+                showVerificationResult(false, 'Certificate not found or invalid hash', certificateData);
+                addRecentVerification(certificateData, false);
+                return;
+            }
+        } else {
+            const idNum = parseInt(certificateIdOrHash);
+            if (isNaN(idNum)) {
+                showNotification('Invalid certificate ID or hash format.', 'error');
+                return;
+            }
+            
+            try {
+                result = await contract.verifyCertificate(idNum);
+                isValid = result && result.isValid;
+                
+                if (isValid) {
+                    certificateData = {
+                        studentName: result.recipientName || 'N/A',
+                        courseName: result.courseName || 'N/A',
+                        completionDate: result.issueDate ? new Date(result.issueDate * 1000).toLocaleDateString() : 'N/A',
+                        grade: 'Pass',
+                        issuer: result.issuerName || 'N/A'
+                    };
+                }
+            } catch (err) {
+                console.error('ID verification failed:', err);
+                showVerificationResult(false, 'Certificate not found or invalid ID', certificateData);
+                addRecentVerification(certificateData, false);
+                return;
+            }
+        }
+
+        if (!isValid) {
+            showVerificationResult(false, 'Certificate not found or has been revoked', certificateData);
+            addRecentVerification(certificateData, false);
+            return;
+        }
+
+        showVerificationResult(true, 'Certificate verified successfully!', certificateData);
+        addRecentVerification(certificateData, true);
+
+    } catch (error) {
+        console.error('Error verifying certificate:', error);
+        let certificateData = {
+            studentName: 'N/A',
+            courseName: 'N/A',
+            completionDate: 'N/A',
+            grade: 'N/A',
+            issuer: 'N/A'
+        };
+        showVerificationResult(false, 'Error verifying certificate: ' + error.message, certificateData);
+        addRecentVerification(certificateData, false);
+    } finally {
+        setButtonLoading('verifyBtn', 'verifyBtnText', 'verifyLoading', false);
+    }
+}
+
+async function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+        const text = await file.text();
+        const certificateData = JSON.parse(text);
+        
+        const dataForHashing = JSON.stringify({
+            studentName: certificateData.studentName,
+            courseName: certificateData.courseName,
+            completionDate: certificateData.completionDate,
+            grade: certificateData.grade,
+            issuerName: certificateData.issuerName,
+            issueDate: certificateData.issueDate,
+            issueTimestamp: certificateData.issueTimestamp,
+            issuer: certificateData.issuer
+        });
+
+        const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(dataForHashing));
+        document.getElementById('manualHash').value = hash;
+        
+        if (certificateData.certificateId) {
+            document.getElementById('certificateId').value = certificateData.certificateId;
+        }
+
+        showNotification('Certificate file processed and hash generated!', 'success');
+    } catch (error) {
+        console.error('Error processing certificate file:', error);
+        showNotification('Invalid certificate file format', 'error');
+    }
+}
+
+function showVerificationResult(isValid, message, data) {
+    const resultDiv = document.getElementById('verificationResult');
+    resultDiv.style.display = 'block';
+    if (isValid) {
+        resultDiv.className = 'verification-success';
+        resultDiv.innerHTML = `
+            <h4>${message}</h4>
+            <div class="certificate-details">
+                <p><strong>Student Name:</strong> ${data.studentName}</p>
+                <p><strong>Course:</strong> ${data.courseName}</p>
+                <p><strong>Completion Date:</strong> ${data.completionDate}</p>
+                <p><strong>Grade:</strong> ${data.grade}</p>
+                <p><strong>Issuer:</strong> ${data.issuer}</p>
+            </div>
+        `;
+    } else {
+        resultDiv.className = 'verification-error';
+        resultDiv.innerHTML = `<h4>${message}</h4>`;
+    }
+}
+
+function addRecentVerification(data, isValid) {
+    const recentDiv = document.getElementById('recentVerifications');
+    const card = document.createElement('div');
+    card.className = 'certificate-card';
+    card.innerHTML = `
+        <p><strong>Student:</strong> ${data.studentName}</p>
+        <p><strong>Course:</strong> ${data.courseName}</p>
+        <p><strong>Date:</strong> ${data.completionDate}</p>
+        <p><strong>Status:</strong> <span class="status-badge ${isValid ? 'status-approved' : 'status-rejected'}">${isValid ? 'Valid' : 'Invalid'}</span></p>
+    `;
+    recentDiv.prepend(card);
+}
+
+// System Statistics Functions
 async function loadSystemStats() {
   if (!isConnected) return;
 
@@ -1280,6 +1653,7 @@ async function loadSystemStats() {
   }
 }
 
+// UI Management Functions
 function showPage(pageId, event) {
   const pages = document.querySelectorAll('.page');
   pages.forEach(page => page.classList.remove('active'));
@@ -1368,6 +1742,7 @@ function openInstitutionPortal() {
   };
 }
 
+// Utility Functions
 function formatAddress(address) {
   if (!address) return 'N/A';
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -1382,35 +1757,6 @@ function copyToClipboard(text) {
   });
 }
 
-document.addEventListener('click', function (e) {
-  if (e.target.classList.contains('copy-btn')) {
-    const textToCopy = e.target.getAttribute('data-copy');
-    copyToClipboard(textToCopy);
-  }
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-  const addresses = document.querySelectorAll('.address');
-  addresses.forEach(addr => {
-    addr.addEventListener('click', function () {
-      copyToClipboard(this.textContent);
-    });
-    addr.style.cursor = 'pointer';
-    addr.title = 'Click to copy';
-  });
-});
-
-function generateCertificateData(studentName, courseName, issuerName, certificateId, issueDate) {
-    return {
-        studentName,
-        courseName,
-        issuerName,
-        certificateId,
-        issueDate,
-        issueTimestamp: Date.now()
-    };
-}
-
 function deterministicStringify(obj) {
     return JSON.stringify({
         studentName: obj.studentName,
@@ -1422,159 +1768,25 @@ function deterministicStringify(obj) {
     });
 }
 
-async function issueCertificate() {
-    if (!isConnected) {
-        showNotification('Please connect your wallet first', 'error');
-        return;
-    }
+// Event Listeners
+document.addEventListener('click', function (e) {
+  if (e.target.classList.contains('copy-btn')) {
+    const textToCopy = e.target.getAttribute('data-copy');
+    copyToClipboard(textToCopy);
+  }
+});
 
-    const studentName = document.getElementById('studentName').value.trim();
-    const courseName = document.getElementById('courseName').value.trim();
-    const completionDate = document.getElementById('completionDate').value || new Date().toISOString().split('T')[0];
-    const grade = document.getElementById('grade').value.trim() || 'Pass';
-    
-    let issuerName = "Institution";
-    const issuerNameInput = document.getElementById('institutionName');
-    if (issuerNameInput && issuerNameInput.value.trim()) {
-        issuerName = issuerNameInput.value.trim();
-    }
-
-    if (!studentName || !courseName || !issuerName) {
-        showNotification('Please fill all required fields', 'error');
-        return;
-    }
-
-    try {
-        setButtonLoading('issueBtn', 'issueBtnText', 'issueLoading', true);
-
-        const isAuthorized = await contract.isAuthorized(currentAccount);
-        if (!isAuthorized) {
-            throw new Error('Your wallet is not authorized to issue certificates');
-        }
-
-        const timestamp = Math.floor(Date.now() / 1000);
-        const issueDateISO = new Date(timestamp * 1000).toISOString();
-
-        const certificateData = {
-            studentName: studentName,
-            courseName: courseName,
-            completionDate: completionDate,
-            grade: grade,
-            issuerName: issuerName,
-            issueDate: issueDateISO,
-            issueTimestamp: timestamp,
-            issuer: currentAccount
-        };
-
-        const dataForHashing = JSON.stringify({
-            studentName: certificateData.studentName,
-            courseName: certificateData.courseName,
-            completionDate: certificateData.completionDate,
-            grade: certificateData.grade,
-            issuerName: certificateData.issuerName,
-            issueDate: certificateData.issueDate,
-            issueTimestamp: certificateData.issueTimestamp,
-            issuer: certificateData.issuer
-        });
-
-        const certificateHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(dataForHashing));
-
-        const tx = await contract.issueCertificate(
-            studentName,
-            courseName,
-            issuerName,
-            certificateHash
-        );
-
-        showNotification('Transaction submitted. Waiting for confirmation...', 'info');
-        const receipt = await tx.wait();
-
-        const certificateId = receipt.events?.find(e => e.event === 'CertificateIssued')?.args?.id || 'N/A';
-
-        certificateData.certificateId = certificateId.toString();
-        certificateData.certificateHash = certificateHash;
-        certificateData.transactionHash = receipt.transactionHash;
-        certificateData.blockNumber = receipt.blockNumber;
-
-        const downloadableData = JSON.stringify(certificateData, null, 2);
-        window.lastIssuedCertificateDownload = downloadableData;
-
-        window.lastIssuedCertificate = certificateData;
-
-        showNotification('Certificate issued successfully with hash stored!', 'success');
-        document.getElementById('txHash').textContent = receipt.transactionHash;
-        document.getElementById('certId').textContent = certificateId.toString();
-        document.getElementById('blockNumber').textContent = receipt.blockNumber;
-        document.getElementById('certificateHash').textContent = certificateHash;
-        document.getElementById('polygonScanLink').href = `https://amoy.polygonscan.com/tx/${receipt.transactionHash}`;
-        document.getElementById('transactionInfo').style.display = 'block';
-        document.getElementById('previewCertId').textContent = certificateId.toString();
-        document.getElementById('downloadBtn').disabled = false;
-        document.getElementById('emailBtn').disabled = false;
-
-        document.getElementById('previewStudentName').textContent = studentName;
-        document.getElementById('previewCourseName').textContent = courseName;
-        document.getElementById('previewDate').textContent = completionDate;
-        document.getElementById('previewGrade').textContent = grade;
-
-        loadIssuedCertificates();
-        loadSystemStats();
-
-    } catch (error) {
-        console.error('Error issuing certificate:', error);
-        showNotification('Failed to issue certificate: ' + error.message, 'error');
-    } finally {
-        setButtonLoading('issueBtn', 'issueBtnText', 'issueLoading', false);
-    }
-}
-
-function downloadCertificate() {
-    try {
-        if (!window.lastIssuedCertificateDownload) {
-            showNotification('No certificate data available for download', 'error');
-            return;
-        }
-
-        const dataStr = window.lastIssuedCertificateDownload;
-        const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-        const exportFileDefaultName = `certificate_${document.getElementById('previewCertId').textContent}.json`;
-        
-        const link = document.createElement('a');
-        link.setAttribute('href', dataUri);
-        link.setAttribute('download', exportFileDefaultName);
-        link.click();
-        
-        showNotification('Certificate downloaded successfully!', 'success');
-    } catch (error) {
-        console.error('Error downloading certificate:', error);
-        showNotification('Failed to download certificate', 'error');
-    }
-}
-
-function generateCertificateHash(certificateData) {
-    const dataForHashing = JSON.stringify({
-        studentName: certificateData.studentName,
-        courseName: certificateData.courseName,
-        completionDate: certificateData.completionDate,
-        grade: certificateData.grade,
-        issuerName: certificateData.issuerName,
-        issueDate: certificateData.issueDate,
-        issueTimestamp: certificateData.issueTimestamp,
-        issuer: certificateData.issuer
+// UI enhancements
+document.addEventListener('DOMContentLoaded', function () {
+  const addresses = document.querySelectorAll('.address');
+  addresses.forEach(addr => {
+    addr.addEventListener('click', function () {
+      copyToClipboard(this.textContent);
     });
-    
-    return ethers.utils.keccak256(ethers.utils.toUtf8Bytes(dataForHashing));
-}
+    addr.style.cursor = 'pointer';
+    addr.title = 'Click to copy';
+  });
+});
 
-function updateCertificatePreview() {
-    const studentName = document.getElementById('studentName').value || 'Student Name';
-    const courseName = document.getElementById('courseName').value || 'Course Name';
-    const completionDate = document.getElementById('completionDate').value || 'Not specified';
-    const grade = document.getElementById('grade').value || 'Not specified';
-    
-    document.getElementById('previewStudentName').textContent = studentName;
-    document.getElementById('previewCourseName').textContent = courseName;
-    document.getElementById('previewDate').textContent = completionDate;
-    document.getElementById('previewGrade').textContent = grade;
-    document.getElementById('previewStudentAddr').textContent = 'Not specified';
-}
+
+
