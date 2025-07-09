@@ -1,43 +1,31 @@
-# Checkpoint 5 Update (8:00 PM IST)
+# Checkpoint 1 – Day 2 Update (2:00 PM IST)
 
-## What’s Implemented So Far
+## What’s Completed
 
-### 1. Government Page – HTML Complete
-- Fully structured the **Government Panel UI** using semantic HTML.
-- Includes sections for login, institution registration, and navigation.
+### Unified HTML Structure
+- Combined **all application sections** (Government, Institution, Verification, About) into a **single HTML file** for simplicity and centralized management.
+- Well-organized layout with clear sections demarcated using semantic tags and IDs.
 
-### 2. Institution Page – HTML Complete
-- Created layout for institution dashboard and certificate generation panel.
+### Full CSS Styling
+- Created and linked a **dedicated external CSS stylesheet** for consistent and clean styling.
+- Utilized **inline styles** in certain areas where context-specific styling was needed.
+- Responsive layout considerations are in place.
 
-### 3. Public Page – HTML In Progress
-- Base structure added for public verification system.
-- Includes upload input for certificate and result display placeholders.
-
-### 4. CSS Styling
--  **Navbar styling complete** – consistent across all pages.
--  **Wallet status dot** implemented – changes color based on wallet connection status (connected/disconnected).
-- Used external CSS for base styling and minor inline styles where needed.
+### Basic JavaScript Integration
+- Used **inline JavaScript** for a few interactive elements (like toggling views, wallet status, etc.).
+- Ensures foundational interactivity without yet fully connecting to blockchain logic.
 
 ---
 
-## What’s Next?
+## Next Steps: JavaScript Logic Development
 
-### 1. Complete Remaining Pages
-  - Finalize HTML structure for:
-  - Public (remaining part)
-  - Info / About
-
-### 2. CSS Styling (Next Phase)
-  - Apply clean and responsive CSS for all UI components:
-  - Forms
-  - Cards / Panels
-  - Tables and certificates
-  - Make wallet status dot dynamic using JavaScript
-
-### 3. JavaScript Integration (Upcoming)
-- Add interactive wallet connection logic
-- Connect smart contract (using ethers.js or web3.js)
-- Enable dynamic behavior (e.g. form validation, real-time preview)
+### JavaScript Phase Goals:
+  - Create reusable functions for:
+  - Wallet connect/disconnect
+  - Certificate form handling
+  - Access control (Gov/Admin/Institute)
+  - Add dynamic DOM manipulation for real-time previews and field validation.
+  - Integrate with **MetaMask** and **Ethers.js** for smart contract interaction.
 
 ---
 
