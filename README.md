@@ -1,5 +1,7 @@
 # TrueStamp : Blockchain Certificate Authentication System
 
+### Available at : https://lively-kringle-ea06ae.netlify.app/
+
 ## Problem Statement
 Certificate forgery and tampering have become alarmingly common, compromising the authenticity of academic and professional credentials. Traditional paper-based systems are prone to manipulation, loss, and fraud.
 
@@ -46,6 +48,13 @@ npx hardhat init
 
 # Install Ethers again to ensure compatibility
 npm install ethers
+
+npx hardhat compile
+# Compiles your Solidity smart contract and generates necessary artifacts in the artifacts/ and cache/ folders.
+
+npx hardhat run scripts/deploy.js --network polygonAmoy
+# Deploys your smart contract to the Polygon Amoy Testnet using the specified script.
+# Make sure to copy the generated contract address and use it inside your frontend JavaScript code for interaction.
 ```
 
 ### Project Structure Created by Hardhat:
